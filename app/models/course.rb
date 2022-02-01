@@ -3,26 +3,14 @@ class Course < ApplicationRecord
   after_save :notify_teacher
 
   # validations
-  validate :check_capacity
-  validate :check_course_rules
+  validates_numericality_of :capacity, less_than_or_equal_to: 30, message: "Courses cant have more then 30 students"
 
   # relations
-  belongs_to :teacher, class_name: 'User'
-  belongs_to :student, class_name: 'User'
+  has_many :student_courses
+  has_many :students, through: :student_courses
 
-
-  def check_capacity
-    errors.add(:capacity, "This course is full") if self.capacity >= 30
-  end
-
-  def check_course_rules
-    teachers_course = Course.where(teacher_id: self.teacher_id)
-    if teachers_course.size >= 2
-      errors.add(:teacher_id, "You can only teach 2 courses at same time")
-    elsif self.teacher_id == self.student_id
-      errors.add(:base, "You cannot be a teacher and student at same course")
-    end
-  end
+  has_many :teacher_courses
+  has_many :teachers, through: :teacher_courses
 
   def notify_teacher
     if saved_change_to_capacity?

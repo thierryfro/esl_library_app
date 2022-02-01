@@ -1,5 +1,10 @@
 require 'faker'
 
+User.destroy_all
+Course.destroy_all
+TeacherCourse.destroy_all
+StudentCourse.destroy_all
+
 100.times do
   teacher = User.new(
               name: Faker::Name.name,
@@ -29,11 +34,10 @@ puts "#{User.where(role: 1).count} teachers created."
 end
 puts "#{User.where(role: 2).count} students created."
 
+
 50.times do
   course = Course.create(
     name: Faker::Educator.course_name,
-    student_id: User.where(role: 2).sample.id,
-    teacher_id: User.where(role: 1).sample.id
   )
   unless course.save
     puts "Was not possible to create teacher: #{course.inspect}"
@@ -41,4 +45,28 @@ puts "#{User.where(role: 2).count} students created."
   puts "Course #{course.name} created successfully."
 end
 puts "#{Course.count} courses created."
+
+50.times do
+  teacher_course = TeacherCourse.create(
+    course_id: Course.all.sample.id,
+    user_id: User.where(role: 1).sample.id,
+  )
+  unless teacher_course.save
+    puts "Was not possible to create teacher: #{teacher_course.inspect}"
+  end
+  puts "TeacherCourse #{teacher_course.id} created successfully."
+end
+puts "TeacherCourse: #{TeacherCourse.count} courses created."
+
+50.times do
+  student_course = StudentCourse.create(
+    course_id: Course.all.sample.id,
+    user_id: User.where(role: 2).sample.id,
+  )
+  unless student_course.save
+    puts "Was not possible to create teacher: #{student_course.inspect}"
+  end
+  puts "StudentCourse #{teacher_course.id} created successfully."
+end
+puts "StudentCourse: #{StudentCourse.count} courses created."
 
